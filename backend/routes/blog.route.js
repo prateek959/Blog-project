@@ -8,6 +8,6 @@ blogRouter.post('/create',checkToken,checkRole('editor','admin'),createBlog);
 blogRouter.get('/get',checkToken,checkRole('editor','admin'),getPersonalBlog);
 blogRouter.put('/update/:id',checkToken,checkRole('editor','admin'),updateBlog);
 blogRouter.delete('/delete/:id',checkToken,checkRole('editor','admin'),deleteBlog);
-blogRouter.post('/draft/:blogId',checkToken,checkRole('admin','editor'),draftBlog);
+blogRouter.get('/draft/:blogId',checkToken,checkRole('admin','editor'),draftBlog);
 
 export default blogRouter;

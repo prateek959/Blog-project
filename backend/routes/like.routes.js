@@ -4,6 +4,6 @@ import { checkToken } from '../middlewear/auth.middlewear.js';
 
 const likeRouter = express.Router();
 
-likeRouter.post('/add/:id',checkToken,addLike);
+likeRouter.post('/add/:blogId',checkToken,addLike);
 
 export {likeRouter};

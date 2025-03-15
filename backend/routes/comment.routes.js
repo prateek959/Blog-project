@@ -5,7 +5,7 @@ import { checkToken } from '../middlewear/auth.middlewear.js';
 const commentRouter = express.Router();
 
 commentRouter.post('/create/:blogId',checkToken,createComment);
-commentRouter.post('/update/:commentId',checkToken,editComment);
-commentRouter.post('/delete/:blogId',checkToken,deleteComment);
+commentRouter.put('/update/:commentId',checkToken,editComment);
+commentRouter.delete('/delete/:commentId',checkToken,deleteComment);
 
 export default commentRouter;

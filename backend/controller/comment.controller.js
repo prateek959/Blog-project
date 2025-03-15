@@ -9,12 +9,15 @@ const createComment = async (req, res) => {
         const id = req.params.blogId;
         const user = await User.findOne({ email: req.user.email });
 
-        const data = Comments.create({
+        const blog = await Blog.findById(id);
+
+        const data = await Comments.create({
             userId: user.id,
+            blogId:blog._id,
             text
         });
-        const blog = await Blog.findById(id);
-        blog.commentsId.push((await data).id);
+
+        blog.commentsId.push(data.id);
         await blog.save();
         res.status(200).json({ msg: "Comment ok" });
 
@@ -38,11 +41,10 @@ const editComment = async (req, res) => {
         if (!comment) {
             return res.status(400).json({ msg: "Comment is not found" });
         }
-        console.log(comment.userId)
-        console.log(user._id)
+       
         if (comment.userId.toString() !== user._id.toString()) {
             return res.status(400).json({ msg: "Update failed" });
-        }
+        };
 
         comment.text = text;
         await comment.save();
@@ -57,24 +59,31 @@ const editComment = async (req, res) => {
 
 const deleteComment = async (req, res) => {
     try {
-        const id = req.params.blogId;
+        const id = req.params.commentId;
         const user = await User.findOne({ email: req.user.email });
         if (!user) {
             return res.status(400).json({ msg: "User not found" })
         }
-        const blog = await Blog.findById(id).populate('commentsId');
-        if (!blog) {
-            return res.status(400).json({ msg: "Blog not found" })
-        }
-        const comment = await Comments.findOne({ userId: user._id });
+
+        const comment = await Comments.findById(id);
 
         if (!comment) {
             return res.status(400).json({ msg: "Comment not found" });
         }
 
-        await comment.deleteOne();
-        blog.commentsId = blog.commentsId.filter((elem) => elem.userId.toString() !== user._id.toString());
+        const blog = await Blog.findById(comment.blogId);;
+        if (!blog) {
+            return res.status(400).json({ msg: "Blog not found" })
+        }
+
+        if(user._id.toString() !== comment.userId.toString()){
+            return res.status(400).json({msg:"Comment is not deleted"});
+        };
+
+        blog.commentsId = blog.commentsId.filter((elem) => elem.toString() !== comment._id.toString());
         await blog.save();
+        await comment.save();
+        await comment.deleteOne();
         res.status(200).json({ msg: "Comment deleted successfully" });
 
     } catch (error) {

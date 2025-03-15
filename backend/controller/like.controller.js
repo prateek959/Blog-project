@@ -5,7 +5,7 @@ import { User } from "../models/user.schema.js";
 
 const addLike = async (req, res) => {
     try {
-        const id = req.params.id;
+        const id = req.params.blogId;
         const blog = await Blog.findById(id).populate('likes');
         const user = await User.findOne({ email: req.user.email });
         if (!user) {

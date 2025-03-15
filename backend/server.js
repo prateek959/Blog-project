@@ -11,7 +11,6 @@ import commentRouter from './routes/comment.routes.js';
 import { likeRouter } from './routes/like.routes.js';
 import readerRouter from './routes/reader.routes.js';
 import adminRouter from './routes/admin.routes.js';
-import viewsRouter from './routes/views.routes.js';
 
 const app = express();
 app.use(express.json());
@@ -29,7 +28,6 @@ app.use('/comment',commentRouter);
 app.use('/like',likeRouter);
 app.use('/read',readerRouter);
 app.use('/admin',adminRouter);
-app.use('/views',viewsRouter);
 
 const PORT = process.env.PORT || 4328;
 

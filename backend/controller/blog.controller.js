@@ -2,6 +2,7 @@ import { Blog } from "../models/blog.schema.js";
 import { v2 as cloudinary } from "cloudinary";
 import { User } from "../models/user.schema.js";
 import transporter from "../nodemailer/nodemailer.js";
+import cron from 'node-cron'
 
 cloudinary.config({
     cloud_name: `${process.env.CLOUD_NAME}`,
@@ -21,13 +22,14 @@ const createBlog = async (req, res) => {
             });
             pic = uploadResult.secure_url;
         };
-
+         const user = await User.findOne({email:req.user.email});
         const data = await Blog.create({
+            userId:user._id,
             title,
             author,
             content,
             image: pic,
-            status: "publish"
+            status: status == "scheduled" ? "scheduled" : "publish"
         });
 
         const userData = await User.findOne({ email: req.user.email });
@@ -67,6 +69,31 @@ const createBlog = async (req, res) => {
             `
         };
 
+        if (status == "scheduled") {
+            let { date, hour, minutes } = req.body;
+
+            const now = new Date();
+
+            if (date === undefined) date = now.getDate();
+            if (hour === undefined) hour = now.getHours();
+            if (minutes === undefined) minutes = now.getMinutes();
+
+            cron.schedule("* * * * *", () => {
+                const current = new Date();
+
+                if (
+                    current.getDate() == date &&
+                    current.getHours() == hour &&
+                    current.getMinutes() == minutes
+                ) {
+                    transporter.sendMail(mailOptions);
+                    data.status = "publish"
+                    data.save();
+                    job.stop();
+                }
+            });
+            return res.status(201).json({ msg: "Blog scheduled successfully" });
+        };
 
         await transporter.sendMail(mailOptions);
         res.status(201).json({ msg: "Blog created successfully", data });
@@ -132,14 +159,14 @@ const updateBlog = async (req, res) => {
 const deleteBlog = async (req, res) => {
     try {
         const id = req.params.id;
-        const user = await User.findOne({ email: req.user.email }).populate('blogId');
+        const user = await User.findOne({ email: req.user.email });
 
         if (!user.blogId.includes(id)) {
             return res.status(400).json({ msg: "Unauthorized access" });
         }
-        const blog = await Blog.findByIdAndDelete(id);
-
-        user.blogId = user.blogId.filter((elem) => elem._id !== blog._id);
+        const blog = await Blog.findById(id);
+        
+        user.blogId = user.blogId.filter((elem) => blog._id.toString() !== elem.toString());
         await user.save();
         await blog.deleteOne();
         res.status(200).json({ msg: "Delete successfully" });
