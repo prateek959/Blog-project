@@ -3,7 +3,7 @@ dotenv.config();
 import express from 'express';
 import { db } from './config/db.js';
 import cookieParser from 'cookie-parser';
-import blogRouter from './routes/blog.route.js';
+import blogRouter from './routes/blog.routes.js';
 import userRouter from './routes/user.routes.js';
 import { testRouter } from './routes/test.routes.js';
 import fileUpload from "express-fileupload";
