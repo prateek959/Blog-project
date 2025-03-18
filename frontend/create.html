@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Blog</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav {
+      background-color: #0072ff;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+    }
+
+    nav h1 {
+      font-size: 1.5rem;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .container h2 {
+      margin-bottom: 20px;
+      color: #0072ff;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .form-group input[type="file"] {
+      padding: 4px;
+    }
+
+    .schedule-fields {
+      display: none;
+    }
+
+    button {
+      background-color: #0072ff;
+      color: white;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005bd1;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h1>📝 Blog App</h1>
+    <ul>
+      <li><a href="./index.html">Home</a></li>
+      <li><a href="./myblogs.html">My Blogs</a></li>
+      <li><a href="./about.html">About</a></li>
+      <li><a href="#" id="logout">Logout</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h2>Create New Blog</h2>
+    <form id="blogForm" enctype="multipart/form-data">
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" name="title" required />
+      </div>
+
+      <div class="form-group">
+        <label>Author</label>
+        <input type="text" name="author" required />
+      </div>
+
+      <div class="form-group">
+        <label>Content</label>
+        <textarea name="content" rows="5" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Image</label>
+        <input type="file" name="image" />
+      </div>
+
+      <div class="form-group">
+        <label>Status</label>
+        <select name="status" id="statusSelect">
+          <option value="publish">Publish</option>
+          <option value="scheduled">Schedule</option>
+          <option value="draft">Draft</option>
+        </select>
+      </div>
+
+      <div class="schedule-fields" id="scheduleFields">
+        <div class="form-group">
+          <label>Date (1-31)</label>
+          <input type="number" id="dateInput" name="date" min="1" max="31" />
+        </div>
+
+        <div class="form-group">
+          <label>Hour (0-23)</label>
+          <input type="number" id="hourInput" name="hour" min="0" max="23" />
+        </div>
+
+        <div class="form-group">
+          <label>Minutes (0-59)</label>
+          <input type="number" id="minutesInput" name="minutes" min="0" max="59" />
+        </div>
+      </div>
+
+      <button type="submit">Submit Blog</button>
+    </form>
+  </div>
+
+  <script>
+    // Check login
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) window.location.href = "./login.html";
+
+    const blogForm = document.getElementById("blogForm");
+    const statusSelect = document.getElementById("statusSelect");
+    const scheduleFields = document.getElementById("scheduleFields");
+
+    // Show/hide schedule fields
+    statusSelect.addEventListener("change", () => {
+      scheduleFields.style.display = statusSelect.value === "scheduled" ? "block" : "none";
+    });
+
+    // Handle form submission
+    blogForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(blogForm);
+
+      try {
+        const res = await fetch("http://localhost:3003/blog/create", {
+          method: "POST",
+          headers: {
+            accessToken: `Bearer ${accessToken}`,
+            refreshToken: `Bearer ${localStorage.getItem("refreshToken")}`,
+          },
+          body: formData,
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+          alert(result.msg);
+          window.location.href = "./index.html";
+        } else {
+          alert(result.msg || "Error creating blog");
+        }
+      } catch (err) {
+        console.error("Error:", err);
+        alert("Something went wrong.");
+      }
+    });
+
+    // Logout handler
+    document.getElementById("logout").addEventListener("click", () => {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      alert("You have been logged out.");
+      window.location.href = "login.html";
+    });
+  </script>
+</body>
+</html>

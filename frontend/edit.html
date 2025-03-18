@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Blog</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f2f2f2;
+      padding: 40px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    form {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      background-color: #0072ff;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005ac1;
+    }
+  </style>
+</head>
+<body>
+  <h1>Edit Blog</h1>
+
+  <form id="editForm">
+    <input type="text" id="title" placeholder="Title" />
+    <input type="text" id="author" placeholder="Author" />
+    <textarea id="content" rows="6" placeholder="Content"></textarea>
+    <select id="status">
+      <option value="publish">Publish</option>
+      <option value="draft">Draft</option>
+      <option value="scheduled">Scheduled</option>
+    </select>
+    <button type="submit">Update Blog</button>
+  </form>
+
+  <script>
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const blogId = urlParams.get("id");
+
+    async function getBlogDetails() {
+      try {
+        const res = await fetch(`http://localhost:3003/blog/get/${blogId}`, {
+          method: "GET",
+          headers: {
+            accessToken: `Bearer ${accessToken}`,
+            refreshToken: `Bearer ${refreshToken}`,
+          }
+        });
+
+        if (res.status === 401) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        const blog = await res.json();
+        document.getElementById("title").value = blog.title || "";
+        document.getElementById("author").value = blog.author || "";
+        document.getElementById("content").value = blog.content || "";
+        document.getElementById("status").value = blog.status || "draft";
+
+      } catch (err) {
+        console.error("Error loading blog:", err);
+        alert("Failed to load blog for editing.");
+      }
+    }
+
+    document.getElementById("editForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const updatedBlog = {
+        title: document.getElementById("title").value,
+        author: document.getElementById("author").value,
+        content: document.getElementById("content").value,
+        status: document.getElementById("status").value
+      };
+
+      try {
+        const res = await fetch(`http://localhost:3003/blog/update/${blogId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            accessToken: `Bearer ${accessToken}`,
+            refreshToken: `Bearer ${refreshToken}`,
+          },
+          body: JSON.stringify(updatedBlog)
+        });
+
+        if (res.ok) {
+          alert("Blog updated successfully!");
+          window.location.href = "myblogs.html";
+        } else {
+          alert("Failed to update blog.");
+        }
+      } catch (err) {
+        console.error("Update error:", err);
+        alert("An error occurred while updating.");
+      }
+    });
+
+    getBlogDetails();
+  </script>
+</body>
+</html>

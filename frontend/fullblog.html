@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Full Blog</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    nav {
+      background-color: #0072ff;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+    }
+
+    nav h1 {
+      font-size: 1.5rem;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .blog-image {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .likes button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .comments {
+      margin-top: 30px;
+    }
+
+    .comment-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .comment-box input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .comment-box button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .comment-item {
+      background: #f1f1f1;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <h1>📝 Blog App</h1>
+    <ul>
+      <li><a href="./index.html">Home</a></li>
+      <li><a href="./create.html">Create Blog</a></li>
+      <li><a href="./myblogs.html">My Blogs</a></li>
+      <li><a href="./about.html">About</a></li>
+      <li><a href="#" id="logout">Logout</a></li>
+    </ul>
+  </nav>
+
+  <div class="container" id="blogContainer">
+    <h2 id="title">Loading...</h2>
+    <p id="author"></p>
+    <img id="blogImage" class="blog-image" src="" alt="Blog Image" />
+    <div id="content"></div>
+
+    <div class="likes">
+      <button id="likeBtn">👍 Like (<span id="likeCount">0</span>)</button>
+    </div>
+
+    <div class="comments">
+      <h3>Comments</h3>
+      <div class="comment-box">
+        <input type="text" id="commentInput" placeholder="Add a comment..." />
+        <button onclick="postComment()">Post</button>
+      </div>
+      <div id="commentList"></div>
+    </div>
+  </div>
+
+  <script>
+    const blogId = localStorage.getItem("selectedBlogId");
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    const headers = {
+      accessToken: `Bearer ${accessToken}`,
+      refreshToken: `Bearer ${refreshToken}`,
+      "Content-Type": "application/json"
+    };
+
+    const fetchBlog = async () => {
+      try {
+        const res = await fetch(`http://localhost:3003/read/get_blog/${blogId}`, {
+          method: "GET",
+          credentials: "include",
+          headers: headers
+        });
+
+        if (!res.ok) throw new Error("Unauthorized or blog not found");
+
+        const blog = await res.json();
+        const data = blog[0];
+
+        document.getElementById("title").innerText = data.title;
+        document.getElementById("author").innerText = `By ${data.author}`;
+        document.getElementById("content").innerText = data.content;
+        document.getElementById("likeCount").innerText = data.likes?.length || 0;
+        document.getElementById("blogImage").src = data.image || "https://via.placeholder.com/800x400?text=No+Image";
+
+        // Show all comments
+        const commentList = document.getElementById("commentList");
+        commentList.innerHTML = "";
+        if (Array.isArray(data.commentsId)) {
+          data.commentsId.forEach(comment => {
+            const div = document.createElement("div");
+            div.className = "comment-item";
+            const author = comment.author || "Anonymous";
+            const text = comment.text || comment;
+            div.innerHTML = `<strong>${author}:</strong> ${text}`;
+            commentList.appendChild(div);
+          });
+        }
+
+      } catch (err) {
+        document.getElementById("blogContainer").innerHTML = "<p>Error loading blog. Please login again.</p>";
+      }
+    };
+
+    const likeBlog = async () => {
+      try {
+        const res = await fetch(`http://localhost:3003/like/add/${blogId}`, {
+          method: "POST",
+          credentials: "include",
+          headers: headers
+        });
+
+        const result = await res.json();
+        document.getElementById("likeCount").innerText = result.data;
+      } catch (err) {
+        alert("Failed to like blog.");
+      }
+    };
+
+    const postComment = async () => {
+      const input = document.getElementById("commentInput");
+      const comment = input.value.trim();
+      if (!comment) return;
+
+      try {
+        const res = await fetch(`http://localhost:3003/comment/create/${blogId}`, {
+          method: "POST",
+          credentials: "include",
+          headers: headers,
+          body: JSON.stringify({ text: comment })
+        });
+
+        if (!res.ok) throw new Error("Comment failed");
+
+        const div = document.createElement("div");
+        div.className = "comment-item";
+        div.innerHTML = `<strong>You:</strong> ${comment}`;
+        document.getElementById("commentList").prepend(div);
+        input.value = "";
+      } catch (err) {
+        alert("Failed to post comment");
+      }
+    };
+
+    document.getElementById("likeBtn").addEventListener("click", likeBlog);
+
+    document.getElementById("logout").addEventListener("click", async () => {
+      try {
+        await fetch("http://localhost:3003/auth/logout", {
+          method: "POST",
+          credentials: "include"
+        });
+        alert("You have been logged out.");
+        window.location.href = "login.html";
+      } catch (err) {
+        alert("Logout failed");
+      }
+    });
+
+    fetchBlog();
+  </script>
+</body>
+
+</html>

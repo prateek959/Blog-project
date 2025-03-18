@@ -13,6 +13,7 @@ cloudinary.config({
 const createBlog = async (req, res) => {
     try {
         const { title, author, content, status } = req.body;
+        console.log(req.body);
         let pic = req.body.image
         if (req.files && req.files.image) {
             const imageFile = req.files.image
@@ -22,9 +23,9 @@ const createBlog = async (req, res) => {
             });
             pic = uploadResult.secure_url;
         };
-         const user = await User.findOne({email:req.user.email});
+        const user = await User.findOne({ email: req.user.email });
         const data = await Blog.create({
-            userId:user._id,
+            userId: user._id,
             title,
             author,
             content,
@@ -71,16 +72,14 @@ const createBlog = async (req, res) => {
 
         if (status == "scheduled") {
             let { date, hour, minutes } = req.body;
-
             const now = new Date();
-
-            if (date === undefined) date = now.getDate();
-            if (hour === undefined) hour = now.getHours();
-            if (minutes === undefined) minutes = now.getMinutes();
+            if (date === "") date = now.getDate();
+            if (hour === "") hour = now.getHours();
+            if (minutes === "") minutes = now.getMinutes();
 
             cron.schedule("* * * * *", () => {
                 const current = new Date();
-
+                
                 if (
                     current.getDate() == date &&
                     current.getHours() == hour &&
@@ -89,12 +88,11 @@ const createBlog = async (req, res) => {
                     transporter.sendMail(mailOptions);
                     data.status = "publish"
                     data.save();
-                    job.stop();
                 }
             });
             return res.status(201).json({ msg: "Blog scheduled successfully" });
         };
-
+        console.log("publish")
         await transporter.sendMail(mailOptions);
         res.status(201).json({ msg: "Blog created successfully", data });
 
@@ -109,9 +107,9 @@ const getPersonalBlog = async (req, res) => {
 
         const user = await User.findOne({ email: req.user.email }).populate('blogId');
 
-        const data = user.blogId;
+        const blogs = user.blogId;
 
-        res.status(200).json(data);
+        res.status(200).json(blogs);
 
     } catch (error) {
         console.log(error.message);
@@ -165,7 +163,7 @@ const deleteBlog = async (req, res) => {
             return res.status(400).json({ msg: "Unauthorized access" });
         }
         const blog = await Blog.findById(id);
-        
+
         user.blogId = user.blogId.filter((elem) => blog._id.toString() !== elem.toString());
         await user.save();
         await blog.deleteOne();

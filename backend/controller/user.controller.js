@@ -52,10 +52,21 @@ const login = async (req, res) => {
 
         const refreshToken = jwt.sign({ email: email, role: user.role }, process.env.JWT_SECRET_KEY, { expiresIn: '7d' });
 
-        res.cookie('accessToken', accessToken, { maxAge: 60 * 60 * 1000, });
-        res.cookie('refreshToken', refreshToken, { maxAge: 7 * 24 * 60 * 60 * 1000, });
+        // res.cookie("accessToken", accessToken, {
+        //     httpOnly: false,
+        //     secure: false, // set to true in production (HTTPS)
+        //     sameSite: "lax",
+        //     maxAge: 60 * 60 * 1000 // 1 hour
+        // });
 
-        res.status(200).json({ msg: "Login successfully" });
+        //   res.cookie("refreshToken", refreshToken, {
+        //     httpOnly: false,
+        //     secure: false,
+        //     sameSite: "lax",
+        //     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        //   });
+
+       return res.status(200).json({ msg: "Login successfully", accessToken, refreshToken });
 
     } catch (error) {
         console.log(error.message);

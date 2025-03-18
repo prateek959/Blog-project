@@ -17,7 +17,7 @@ const addLike = async (req, res) => {
             await existingLike.deleteOne({_id:existingLike.id});
             blog.likes = blog.likes.filter((elem) => elem.userId.toString() !== user.id.toString());
             await blog.save();
-            return res.status(200).json({ msg: "Like remove successfully" });
+            return res.status(200).json({ msg: "Like remove successfully", data:blog.likes.length });
         }
         const like = await Like.create({
             userId: user.id
@@ -25,7 +25,7 @@ const addLike = async (req, res) => {
         blog.likes.push(await like.id);
         await blog.save();
 
-        res.status(200).json({ msg: "Like successfully" });
+        res.status(200).json({ msg: "Like successfully", data:blog.likes.length });
 
     } catch (error) {
         console.log(error.message);

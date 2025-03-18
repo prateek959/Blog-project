@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About Us</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f2f6fc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    nav {
+      background-color: #0072ff;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+    }
+
+    nav h1 {
+      font-size: 1.5rem;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    nav ul li a:hover {
+      color: #ffde59;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 40px auto;
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      flex-grow: 1;
+    }
+
+    .about-title {
+      text-align: center;
+      font-size: 2rem;
+      color: #0072ff;
+      margin-bottom: 30px;
+    }
+
+    .about-section {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    .about-section img {
+      width: 250px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 114, 255, 0.2);
+    }
+
+    .about-section p {
+      font-size: 1.1rem;
+      color: #333;
+      line-height: 1.8;
+    }
+
+    .highlight {
+      background-color: #eaf4ff;
+      padding: 20px;
+      border-left: 6px solid #0072ff;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #0072ff;
+      color: white;
+      position: relative;
+      bottom: 0;
+      width: 100%;
+    }
+
+    @media screen and (max-width: 768px) {
+      .about-section {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .about-section img {
+        width: 100%;
+        max-width: 300px;
+      }
+
+      main {
+        margin: 20px;
+        padding: 25px;
+      }
+    }
+
+    @media screen and (max-width: 600px) {
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      nav ul {
+        flex-direction: column;
+        width: 100%;
+        margin-top: 10px;
+        gap: 10px;
+      }
+
+      nav h1 {
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h1>📝 Blog App</h1>
+    <ul>
+      <li><a href="./index.html">Home</a></li>
+      <li><a href="./create.html">Create Blog</a></li>
+      <li><a href="./myblogs.html">My Blogs</a></li>
+      <li><a href="./about.html">About</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <h2 class="about-title">About This Project</h2>
+
+    <div class="about-section">
+      <img src="https://cdn-icons-png.flaticon.com/512/3022/3022219.png" alt="Blogging illustration" />
+      <p>
+        <strong>My Blog</strong> is a modern, user-friendly blogging platform built to empower everyone to share their stories, thoughts, and ideas with the world.
+        Whether you're writing about travel, tech, lifestyle, or personal journeys — this is your creative space.
+      </p>
+    </div>
+
+    <div class="highlight">
+      <p>
+        ✍️ Create and publish your blogs with ease. <br/>
+        💬 Engage with others through likes and comments. <br/>
+        🧾 View and manage your personal blogs. <br/>
+        🛡️ Admins can manage all content responsibly.
+      </p>
+    </div>
+
+    <p style="margin-top: 30px; font-size: 1.1rem; color: #444;">
+      Our mission is to make blogging simple, clean, and accessible for everyone — whether you're a beginner or an experienced writer. 
+      We believe everyone has a voice that deserves to be heard. Start writing today and let your words make an impact!
+    </p>
+  </main>
+
+  <footer>
+    &copy; 2025 My Blog. All rights reserved.
+  </footer>
+</body>
+</html>

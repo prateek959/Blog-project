@@ -1,52 +1,55 @@
 import jwt from 'jsonwebtoken';
 import { User } from '../models/user.schema.js';
 
+const extractToken = (authHeader) => {
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    return authHeader.split(" ")[1];
+  }
+  return null;
+};
+
 const checkToken = async (req, res, next) => {
-  const accessToken = req.cookies['accessToken'];
+  const accessHeader = req.headers['accesstoken'];
+  const refreshHeader = req.headers['refreshtoken'];
+
+  const accessToken = extractToken(accessHeader);
 
   if (accessToken) {
     try {
-      // console.log(accessToken)
       const decode = jwt.verify(accessToken, process.env.JWT_SECRET_KEY);
-      // console.log(decode)
-      // const user = await User.findOne({ email:decode.email });
-
       req.user = decode;
-      // console.log(req.user);
-      next();
+      return next();
     } catch (error) {
-      console.log("invalid access token");
-      res.status(401).json({ message: "Unauthorized Access" });
+      console.log("Invalid access token");
     }
-  } else {
+  }
 
-    try {
-      const refreshToken = req.cookies["refreshToken"];
-      
-      if (!refreshToken) {
-        console.log("Neither Access nor Refresh token is present");
-        return res.status(401).json({ message: "Unauthorized Access" });
-      };
+  // Try refresh token
+  const refreshToken = extractToken(refreshHeader);
 
-      const decode = jwt.verify(refreshToken, process.env.JWT_SECRET_KEY);
-      
-      const newAccessToken = jwt.sign(
-        { email: decode.email, role: decode.role },
-        process.env.JWT_SECRET_KEY,
-        { expiresIn: "1h" }
-      );
-     
-      res.cookie("accessToken", newAccessToken, { maxAge: 60 * 60 * 1000, });
+  if (!refreshToken) {
+    console.log("No valid tokens provided");
+    return res.status(401).json({ message: "Unauthorized Access" });
+  }
 
-      // const user = await User.findOne({ email:decode.email });
+  try {
+    const decode = jwt.verify(refreshToken, process.env.JWT_SECRET_KEY);
 
-      req.user = decode;
+    // Issue a new access token
+    const newAccessToken = jwt.sign(
+      { email: decode.email, role: decode.role },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "1h" }
+    );
 
-      next();
-    } catch (error) {
-      console.log("invalid refresh token");
-      res.status(401).json({ message: "Unauthorized Access" });
-    }
+    // Optionally: send new access token in response headers
+    res.setHeader("x-new-access-token", newAccessToken);
+
+    req.user = decode;
+    next();
+  } catch (error) {
+    console.log("Invalid refresh token");
+    res.status(401).json({ message: "Unauthorized Access" });
   }
 };
 
@@ -56,17 +59,15 @@ const checkRole = (...role) => {
       const user = req.user;
 
       if (!role.includes(user.role)) {
-        throw new Error("Unauthorized access");
+        return res.status(403).json({ message: "Forbidden: Insufficient permissions" });
       }
-      else {
-        next();
-      }
+
+      next();
     } catch (error) {
       console.log(error.message);
       res.status(500).json({ msg: "Internal server error" });
     }
-  }
-}
-
+  };
+};
 
 export { checkToken, checkRole };

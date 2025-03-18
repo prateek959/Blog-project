@@ -11,10 +11,17 @@ import commentRouter from './routes/comment.routes.js';
 import { likeRouter } from './routes/like.routes.js';
 import readerRouter from './routes/reader.routes.js';
 import adminRouter from './routes/admin.routes.js';
+import cors from 'cors';
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+// CORS config
+app.use(cors({
+  origin: "http://127.0.0.1:5500", // frontend
+  credentials: true               // allow cookies
+}))
+
 app.use(fileUpload({ useTempFiles: true, tempFileDir: "/tmp/" }));
 
 app.get('/',(req, res)=>{

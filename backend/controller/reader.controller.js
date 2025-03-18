@@ -1,4 +1,5 @@
 import { Blog } from "../models/blog.schema.js";
+import { User } from "../models/user.schema.js";
 
 
 const getBlog = async (req, res) => {
@@ -16,7 +17,7 @@ const getBlogbyId = async (req, res) => {
     try {
         const blogId = req.params.blogId
         const data = await Blog.find({ status: "publish", _id: blogId }).populate('likes').populate('commentsId');
-
+        
         res.status(200).json(data);
     } catch (error) {
         console.log(error.message);

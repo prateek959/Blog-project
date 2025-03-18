@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <style>
+    body {
+      background: #f5f5f5;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 300px;
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #555;
+    }
+
+    a {
+      text-decoration: none;
+      color: #007bff;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>🔑 Login</h2>
+    <input id="email" type="email" placeholder="Email" required /><br>
+    <input id="password" type="password" placeholder="Password" required /><br>
+    <button id="login-btn">Login</button>
+    <p>Don't have an account? <a href="./signup.html">Signup</a></p>
+  </div>
+
+  <script>
+    const API = "http://localhost:3003";
+  
+    document.getElementById("login-btn").onclick = () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+  
+      if (!email || !password) {
+        return alert("Please fill in all fields.");
+      }
+  
+      fetch(`${API}/user/login`, {
+        method: "POST",
+        credentials: "include", // required to get cookies
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.msg === "Login successfully") {
+            // ✅ Get both tokens from cookies
+            const accessToken = data.accessToken;
+            const refreshToken = data.refreshToken;
+  
+            console.log("🔑 Access Token (cookie):", accessToken);
+            console.log("♻️ Refresh Token (cookie):", refreshToken);
+  
+            // ✅ Store in localStorage
+            if (accessToken) localStorage.setItem("accessToken", accessToken);
+            if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+  
+            alert("✅ Login Successful! Redirecting to homepage...");
+            window.location.href = "index.html";
+          } else {
+            alert("❌ Login Failed: " + data.msg);
+          }
+        })
+        .catch(err => {
+          alert("❌ Login error: " + err.message);
+        });
+    };
+  
+    function getCookieValue(name) {
+      const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+      return match ? match[2] : null;
+    }
+  </script>
+  
+  
+  
+</body>
+</html>
