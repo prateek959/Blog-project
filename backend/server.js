@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(cookieParser());
 // CORS config
 app.use(cors({
-  origin: "http://127.0.0.1:5500", // frontend
+  origin: "https://blogs-application-project.netlify.app", // frontend
   credentials: true               // allow cookies
 }))
 
