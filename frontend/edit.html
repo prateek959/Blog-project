@@ -72,7 +72,7 @@
 
     async function getBlogDetails() {
       try {
-        const res = await fetch(`http://localhost:3003/blog/get/${blogId}`, {
+        const res = await fetch(`https://blog-project-wykc.onrender.com/blog/get/${blogId}`, {
           method: "GET",
           headers: {
             accessToken: `Bearer ${accessToken}`,
@@ -108,7 +108,7 @@
       };
 
       try {
-        const res = await fetch(`http://localhost:3003/blog/update/${blogId}`, {
+        const res = await fetch(`https://blog-project-wykc.onrender.com/blog/update/${blogId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",

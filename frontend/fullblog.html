@@ -148,7 +148,7 @@
 
     const fetchBlog = async () => {
       try {
-        const res = await fetch(`http://localhost:3003/read/get_blog/${blogId}`, {
+        const res = await fetch(`https://blog-project-wykc.onrender.com/read/get_blog/${blogId}`, {
           method: "GET",
           credentials: "include",
           headers: headers
@@ -186,7 +186,7 @@
 
     const likeBlog = async () => {
       try {
-        const res = await fetch(`http://localhost:3003/like/add/${blogId}`, {
+        const res = await fetch(`https://blog-project-wykc.onrender.com/like/add/${blogId}`, {
           method: "POST",
           credentials: "include",
           headers: headers
@@ -205,7 +205,7 @@
       if (!comment) return;
 
       try {
-        const res = await fetch(`http://localhost:3003/comment/create/${blogId}`, {
+        const res = await fetch(`https://blog-project-wykc.onrender.com/comment/create/${blogId}`, {
           method: "POST",
           credentials: "include",
           headers: headers,
@@ -228,7 +228,7 @@
 
     document.getElementById("logout").addEventListener("click", async () => {
       try {
-        await fetch("http://localhost:3003/auth/logout", {
+        await fetch("https://blog-project-wykc.onrender.com/auth/logout", {
           method: "POST",
           credentials: "include"
         });

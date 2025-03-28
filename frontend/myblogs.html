@@ -155,7 +155,7 @@
 
     async function fetchMyBlogs() {
       try {
-        const res = await fetch("http://localhost:3003/blog/get", {
+        const res = await fetch("https://blog-project-wykc.onrender.com/blog/get", {
           method: "GET",
           headers: {
             accessToken: `Bearer ${accessToken}`,
@@ -212,7 +212,7 @@
       if (!confirmed) return;
 
       try {
-        const res = await fetch(`http://localhost:3003/blog/delete/${blogId}`, {
+        const res = await fetch(`https://blog-project-wykc.onrender.com/blog/delete/${blogId}`, {
           method: "DELETE",
           headers: {
             accessToken: `Bearer ${accessToken}`,
@@ -235,7 +235,7 @@
 
     document.getElementById("logout").addEventListener("click", async () => {
       try {
-        await fetch("http://localhost:3003/auth/logout", {
+        await fetch("https://blog-project-wykc.onrender.com/auth/logout", {
           method: "POST",
           headers: {
             accessToken: `Bearer ${accessToken}`,

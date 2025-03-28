@@ -98,7 +98,7 @@
 
     const fetchBlogs = async () => {
       try {
-        const res = await fetch("http://localhost:3003/read/get", {
+        const res = await fetch("https://blog-project-wykc.onrender.com/read/get", {
           method: "GET",
           credentials: "include"
         });
@@ -138,7 +138,7 @@
 
     document.getElementById("logout").addEventListener("click", async () => {
       try {
-        await fetch("http://localhost:3003/auth/logout", {
+        await fetch("https://blog-project-wykc.onrender.com/auth/logout", {
           method: "POST",
           credentials: "include"
         });
