@@ -17,10 +17,19 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 // CORS config
+// app.use(cors({
+//   origin: "https://blogs-application-project.netlify.app",
+//   credentials: true             
+// }))
+
+
 app.use(cors({
-  origin: "https://blogs-application-project.netlify.app", // frontend
-  credentials: true               // allow cookies
-}))
+  origin: [
+    "https://blogs-application-project.netlify.app",
+    "http://127.0.0.1:5500"
+  ],
+  credentials: true
+}));
 
 app.use(fileUpload({ useTempFiles: true, tempFileDir: "/tmp/" }));
 
