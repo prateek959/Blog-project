@@ -91,6 +91,7 @@ const createBlog = async (req, res) => {
                     data.save();
                 }
             });
+            console.log('scheduled');
             return res.status(201).json({ msg: "Blog scheduled successfully" });
         };
         console.log("publish")
