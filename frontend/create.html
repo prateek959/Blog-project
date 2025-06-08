@@ -160,6 +160,8 @@
 
   <script>
     // Check login
+    // const API = 'http://localhost:3003';
+    const API = "https://blog-project-wykc.onrender.com";
     const accessToken = localStorage.getItem("accessToken");
     if (!accessToken) window.location.href = "./login.html";
 
@@ -178,7 +180,7 @@
       const formData = new FormData(blogForm);
 
       try {
-        const res = await fetch("https://blog-project-wykc.onrender.com/blog/create", {
+        const res = await fetch(`${API}/blog/create`, {
           method: "POST",
           headers: {
             accessToken: `Bearer ${accessToken}`,

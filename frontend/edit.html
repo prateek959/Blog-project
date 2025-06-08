@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Edit Blog</title>
   <style>
     body {
@@ -22,10 +23,12 @@
       background: white;
       padding: 25px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
-    input, textarea, select {
+    input,
+    textarea,
+    select {
       width: 100%;
       padding: 12px;
       margin-bottom: 15px;
@@ -48,6 +51,7 @@
     }
   </style>
 </head>
+
 <body>
   <h1>Edit Blog</h1>
 
@@ -64,6 +68,8 @@
   </form>
 
   <script>
+    const API = "https://blog-project-wykc.onrender.com";
+    // const API = 'http://localhost:3003';
     const accessToken = localStorage.getItem("accessToken");
     const refreshToken = localStorage.getItem("refreshToken");
 
@@ -72,7 +78,7 @@
 
     async function getBlogDetails() {
       try {
-        const res = await fetch(`https://blog-project-wykc.onrender.com/blog/get/${blogId}`, {
+        const res = await fetch(`${API}/blog/get/${blogId}`, {
           method: "GET",
           headers: {
             accessToken: `Bearer ${accessToken}`,
@@ -108,7 +114,7 @@
       };
 
       try {
-        const res = await fetch(`https://blog-project-wykc.onrender.com/blog/update/${blogId}`, {
+        const res = await fetch(`${API}/blog/update/${blogId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -133,4 +139,5 @@
     getBlogDetails();
   </script>
 </body>
+
 </html>

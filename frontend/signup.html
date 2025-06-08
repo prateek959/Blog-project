@@ -108,6 +108,8 @@
   </div>
 
   <script>
+      const API = "https://blog-project-wykc.onrender.com";
+    // const API = 'http://localhost:3003';
     const signupForm = document.getElementById("signupForm");
     const message = document.getElementById("message");
 
@@ -119,7 +121,7 @@
       const password = document.getElementById("password").value;
 
       try {
-        const res = await fetch("https://blog-project-wykc.onrender.com/user/register", {
+        const res = await fetch(`${API}/user/register`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

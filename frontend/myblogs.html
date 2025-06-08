@@ -150,12 +150,14 @@
   </div>
 
   <script>
+      const API = "https://blog-project-wykc.onrender.com";
+    // const API = 'http://localhost:3003';
     const accessToken = localStorage.getItem("accessToken");
     const refreshToken = localStorage.getItem("refreshToken");
 
     async function fetchMyBlogs() {
       try {
-        const res = await fetch("https://blog-project-wykc.onrender.com/blog/get", {
+        const res = await fetch(`${API}/blog/get`, {
           method: "GET",
           headers: {
             accessToken: `Bearer ${accessToken}`,
@@ -212,7 +214,7 @@
       if (!confirmed) return;
 
       try {
-        const res = await fetch(`https://blog-project-wykc.onrender.com/blog/delete/${blogId}`, {
+        const res = await fetch(`${API}/blog/delete/${blogId}`, {
           method: "DELETE",
           headers: {
             accessToken: `Bearer ${accessToken}`,
@@ -235,7 +237,7 @@
 
     document.getElementById("logout").addEventListener("click", async () => {
       try {
-        await fetch("https://blog-project-wykc.onrender.com/auth/logout", {
+        await fetch(`${API}/auth/logout`, {
           method: "POST",
           headers: {
             accessToken: `Bearer ${accessToken}`,
