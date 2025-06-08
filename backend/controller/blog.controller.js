@@ -72,6 +72,7 @@ const createBlog = async (req, res) => {
 
         if (status == "scheduled") {
             let { date, hour, minutes } = req.body;
+            console.log(req.body);
             const now = new Date();
             if (date === "") date = now.getDate();
             if (hour === "") hour = now.getHours();
